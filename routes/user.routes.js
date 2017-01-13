@@ -1,6 +1,6 @@
-var user = require('../controllers/user.controller');
+let user = require('../controllers/user.controller');
 
-module.exports = function(app) {
+module.exports = (app) => {
 
     app.route('/users')
         .get(user.list);

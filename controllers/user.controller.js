@@ -1,24 +1,24 @@
 /**
  * Controller for user methods
  */
-var config = require('../config/config');
+const CONFIG = require('../config/config');
 
 /**
  * Create JSON response with the found user (req.user)
  */
-exports.read = function(req, res) {
+exports.read = (req, res) => {
     res.json(req.user);
 };
 
 /**
  * Create JSON response with all users
  */
-exports.list = function(req, res) {
+exports.list = (req, res) => {
 
     console.log("voor nu geven we altijd dezelfde lijst terug met users");
 
-    var users = [
-        {name: "Beren"},
+    let users = [
+        {name: "Berend"},
         {name: "Hugo"},
         {name: "Ingrid"}
     ];
@@ -33,7 +33,7 @@ exports.list = function(req, res) {
  * @param next - the next function that needs to be executed
  * @param userID - the userID from the URL
  */
-exports.getUserByID = function(req, res, next, userID) {
+exports.getUserByID = (req, res, next, userID) => {
 
     /** als we mongodb gebruiken dan gaan we in deze functie de user opzoeken */
 

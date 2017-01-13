@@ -1,61 +1,66 @@
 /**
- * Configuration for the websever (express). Routing, middleware
+ * Configuration for the webserver (express). Routing, middleware
  */
-var config = require('./config'),
-    express = require('express'),
-    bodyParser = require('body-parser'),
-    methodOverride = require('method-override');
+const CONFIG         = require('./config');
+let express          = require('express'),
+      morgan         = require('morgan'),
+      bodyParser     = require('body-parser'),
+      methodOverride = require('method-override');
 
-module.exports = function() {
+module.exports = () => {
 
-    /** create the express app */
-    var app = express();
+	/** create the express app */
+	var app = express();
 
-    if (process.env.NODE_ENV === 'development') {
-        /** hier gaan we straks specifieke development middleware koppelen (bijvoorbeeld een logger) */
-    } else if (process.env.NODE_ENV === 'production') {
-        /** hier gaan we straks specifieke productie middleware koppelen (bijvoorbeeld compressie) */
-    }
+	if(process.env.NODE_ENV === 'development') {
+		app.use(morgan('dev'));
+		/** hier gaan we straks specifieke development middleware koppelen (bijvoorbeeld een logger) */
+	} else if(process.env.NODE_ENV === 'production') {
+		/** hier gaan we straks specifieke productie middleware koppelen (bijvoorbeeld compressie) */
+	}
 
-    /**
-     * Add required headers
-     */
-    app.use(function (req, res, next) {
+	/**
+	 * Add required headers
+	 */
+	app.use((req, res, next) => {
 
-        /** todo: niet meer iedereen toegang geven met een wildcard */
-        res.setHeader('Access-Control-Allow-Origin', '*');
+		res.set('Access-Control-Allow-Origin', 'http://localhost:1337');
 
-        /** setup REST actions */
-        res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,PATCH,DELETE');
+		/** setup REST actions */
+		res.header('Access-Control-Allow-Methods', 'GET,PUT,POST,PATCH,DELETE');
 
-        /** Request headers you wish to allow */
-        res.setHeader('Access-Control-Allow-Headers', 'X-Requested-With,content-type,Authorization');
+		/** Request headers you wish to allow */
+		res.set('Access-Control-Allow-Headers', 'X-Requested-With,content-type,Authorization');
 
-        res.setHeader('Access-Control-Allow-Credentials', true);
+		res.set('Access-Control-Allow-Credentials', true);
 
-        next();
-    });
+		next();
+	});
 
-    /** Dit zorgt ervoor dat we bij de variabelen kunnen die gepost zijn zoals je in PHP bij $_POST mag */
-    app.use(bodyParser.urlencoded({
-        extended: true
-    }));
+	/** Dit zorgt ervoor dat we bij de variabelen kunnen die gepost zijn zoals je in PHP bij $_POST mag */
+	app.use(bodyParser.urlencoded({
+		extended: true
+	}));
 
-    /**
-     * add json middleware as body parser
-     */
-    app.use(bodyParser.json());
+	/**
+	 * add json middleware as body parser
+	 */
+	app.use(bodyParser.json());
 
-    /**
-     * enable PUT/DELETE REST
-     */
-    app.use(methodOverride());
+	/**
+	 * enable PUT/DELETE REST
+	 */
+	app.use(methodOverride());
 
-    /**
-     * include all routing configuration
-     */
-    require('../routes/user.routes.js')(app);
+	app.get('/', (req, res) => {
+		res.json({welcome: 'this is the main route'});
+	});
 
-    // export the express app
-    return app;
+	/**
+	 * include all routing configuration
+	 */
+	require('../routes/user.routes.js')(app);
+
+	// export the express app
+	return app;
 };
